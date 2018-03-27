@@ -1,0 +1,15 @@
+<!-- The \"lab8_most_rcc_assy\" HDL assembly xml file -->
+<HdlAssembly>
+  <!-- Remove this instance and replace it with real ones -->
+    <Instance worker="agc_complex" name="agc_complex" external="in"></Instance>
+    <Instance worker="timestamper" name="timestamper" external="out"></Instance>
+    <Instance worker="peak_detector" name="peak_detector"></Instance>
+    <Connection>
+        <Port instance="agc_complex" name="out"></Port>
+        <Port instance="peak_detector" name="in"></Port>
+    </Connection>
+    <Connection>
+        <Port instance="peak_detector" name="out"></Port>
+        <Port instance="timestamper" name="in"></Port>
+    </Connection>
+</HdlAssembly>

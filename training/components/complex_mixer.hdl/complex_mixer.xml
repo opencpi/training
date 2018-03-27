@@ -1,0 +1,8 @@
+<HdlWorker language="vhdl" spec="complex_mixer-spec">
+
+  <Property name="data_select" type="bool" readable="true" writable="true" default="false"></Property>
+
+  <StreamInterface name="in"  dataWidth="32"></StreamInterface>
+  <StreamInterface name="out" dataWidth="32"></StreamInterface>
+
+</HdlWorker>

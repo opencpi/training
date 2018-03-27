@@ -1,0 +1,10 @@
+<ComponentSpec>
+  <!-- Add property and port elements here -->
+    <Property name="Current_Second" type="ULong" volatile="true"></Property>
+    <Property name="Messages_Read" type="ULongLong" volatile="true"></Property>
+    <Property name="Bytes_Read" type="ULongLong" volatile="true"></Property>
+    <Port name="Mux_In" protocol="iqstream_with_sync_protocol"></Port>
+    <!-- Port order matters here - first port in the SPEC file -->
+    <Port name="Data_Out" producer="true" protocol="iqstream_protocol"></Port>
+    <Port name="Time_Out" producer="true" protocol="iqstream_with_sync_protocol"></Port>
+</ComponentSpec>
