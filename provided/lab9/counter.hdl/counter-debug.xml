@@ -1,3 +1,0 @@
-<HdlWorker language='vhdl' spec='counter-spec'>
-  <Property name="step" type="bool" default="false" writable="true" readable="true" Debug="true"></Property>
-</HdlWorker>

@@ -1,7 +1,0 @@
-<!-- This is the test xml for testing component "counter" -->
-<tests useHDLFileIo='true'>
-  <!-- Set properties here. 
-       Use test='true' to create a test-exclusive property. -->
-   <property name='ocpi_debug' values='true'/>
-   <property name='max' values="10"/>
-</tests>

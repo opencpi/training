@@ -1,9 +1,0 @@
-<!-- This is the spec file (OCS) for: agc_complex
-     Add component spec attributes, like "protocol".
-     Add property elements for spec properties.
-     Add port elements for i/o ports -->
-<ComponentSpec>
-  <!-- Add property and port elements here -->
-    <Port name="in" producer="false" protocol="iqstream_protocol"></Port>
-    <Port name="out" producer="true" protocol="iqstream_protocol"></Port>
-</ComponentSpec>
