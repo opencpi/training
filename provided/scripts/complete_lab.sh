@@ -36,7 +36,7 @@ if [ ! -d 'provided' ]; then
 fi
 
 # Possible answer source locations
-for dir in ~/.dist/training ~training/.dist/training ./training/; do
+for dir in ~/.dist/training ~training/.dist/training ./training/ .dist/training/; do
   if test -d $dir; then
     export ANS_DIR=$(realpath ${dir})
   fi
@@ -117,6 +117,10 @@ build_test() {
   else
     ocpidev -d training_project build test $1 --build-rcc-platform centos7 --build-rcc-platform xilinx13_3
   fi
+}
+
+# Run a test
+run_test() {
   cd training_project/components/$1
   export OCPI_HDL_SIMULATOR="${OCPI_HDL_SIMULATOR}"
   make run
@@ -174,6 +178,7 @@ if test $1 -ge 3; then
   cp_worker peak_detector.test
   build_workers_rcc
   build_test peak_detector.test
+  run_test peak_detector.test
 fi
 
 if test $1 -ge 4; then
@@ -186,6 +191,7 @@ if test $1 -ge 4; then
   sed -i '/data_select/d' training_project/components/complex_mixer.test/complex_mixer-test.xml
   build_workers_rcc
   build_test complex_mixer.test
+  run_test complex_mixer.test
 fi
 
 if test $1 -ge 5; then
@@ -196,6 +202,41 @@ if test $1 -ge 5; then
   cp_worker time_demux.test
   build_workers_rcc
   build_test time_demux.test
+
+  version=$(ocpirun --version)
+  if [[ "$version" == *"1.4"* ]]; then
+    echo "Fixing a generated Lab 5 test in version 1.4"
+    # Fixup for bug in 1.4, where the connections from time_demux are not correct in a generated test.
+    # When going through the labs manually, users have to fix this. Now we automate, if they use this script.
+    # The cause of this issue is fixed in 1.5.
+    echo '<application done="file_write_from_Data_Out">
+    <instance component="ocpi.core.file_read" connect="time_demux_ms_Mux_In" Name="file_read">
+      <property name="filename" value="../../gen/inputs/case00.00.Mux_In"/>
+      <property name="messagesInFile" value="true"/>
+    </instance>
+    <instance component="ocpi.core.metadata_stressor" name="time_demux_ms_Mux_In" connect="time_demux">
+    </instance>
+    <instance component="ocpi.training.time_demux" name="time_demux"/>
+    <instance component="ocpi.core.backpressure" name="bp_from_Data_Out" connect="file_write_from_Data_Out">
+      <property name="enable_select" value="true"/>
+    </instance>
+    <instance component="ocpi.core.file_write" name="file_write_from_Data_Out"/>
+    <instance component="ocpi.core.backpressure" name="bp_from_Time_Out" connect="file_write_from_Time_Out">
+      <property name="enable_select" value="true"/>
+    </instance>
+    <instance component="ocpi.core.file_write" name="file_write_from_Time_Out"/>
+      <Connection>
+          <Port Instance="time_demux" Name="Time_Out"></Port>
+          <Port Instance="bp_from_Time_Out" Name="in"></Port>
+      </Connection>
+      <Connection>
+          <Port Instance="time_demux" Name="Data_Out"></Port>
+          <Port Instance="bp_from_Data_Out" Name="in"></Port>
+      </Connection>
+    </application>
+    ' > training_project/components/time_demux.test/gen/applications/case00.00.xml
+  fi
+  run_test time_demux.test
 fi
 
 if test $1 -ge 6; then
@@ -208,6 +249,7 @@ if test $1 -ge 6; then
   cp_worker peak_detector.hdl
   build_workers_hdl
   build_test peak_detector.test
+  run_test peak_detector.test
 fi
 
 if test $1 -ge 7; then
@@ -226,6 +268,7 @@ if test $1 -ge 7; then
   if test -n "${BUILD_HDL}"; then
     # If no workers at all, ocpigen will fail with "There are currently no valid workers implementing ocpi.training.agc_complex"
     build_test agc_complex.test
+    run_test agc_complex.test
   fi
 fi
 
@@ -238,6 +281,7 @@ if test $1 -ge 8; then
   if test -n "${BUILD_HDL}"; then
     # If no HDL worker to impement data_select, the test will fail here
     build_test complex_mixer.test
+    run_test complex_mixer.test
   fi
 fi
 
@@ -251,6 +295,7 @@ if test $1 -ge 9; then
   if test -n "${BUILD_HDL}"; then
     # If no workers at all, ocpigen will fail
     build_test counter.test
+    run_test counter.test
   fi
 fi
 

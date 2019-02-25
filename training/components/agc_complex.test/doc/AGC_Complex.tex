@@ -194,17 +194,17 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 			\rowcolor{blue}
 			Type     & Name                & Type   & SequenceLength & ArrayDimensions & Accessibility       & Valid Range & Default & Usage                                        \\
 			\hline
-			Property & \verb+DATA_WIDTH_p+ & UShort & -              & -               & Readable, Parameter & 1-16        & 16      & Worker internal non-sign-extended data width \\
+			Property & \verb+DATA_WIDTH_p+ & UShort & -              & -               & Parameter & 1-16        & 16      & Worker internal non-sign-extended data width \\
 			\hline
-			Property & \verb+AVG_WINDOW_p+ & UShort & -              & -               & Readable, Parameter & 4-256       & 16      & Length of the averaging buffer; should be a power of two \\
+			Property & \verb+AVG_WINDOW_p+ & UShort & -              & -               & Parameter & 4-256       & 16      & Length of the averaging buffer; should be a power of two \\
 			\hline
-			Property & hold                & Bool   & -              & -               & Readable, Writable  & Standard    & false   & Hold disables the gain differential feedback circuit, thus maintaining the current gain \\
+			Property & hold                & Bool   & -              & -               & Writable  & Standard    & false   & Hold disables the gain differential feedback circuit, thus maintaining the current gain \\
 			\hline
-			Property & ref                 & UShort & -              & -               & Readable, Writable  & 1 to $2^{\verb+DATA_WIDTH_p+}-1$ & 0x3FFF & Desired output amplitude expressed in percentage of full scale expected peak value in rms \\
+			Property & ref                 & UShort & -              & -               & Writable  & 1 to $2^{\verb+DATA_WIDTH_p+}-1$ & 0x3FFF & Desired output amplitude expressed in percentage of full scale expected peak value in rms \\
 			\hline
-			Property & mu                  & UShort & -              & -               & Readable, Writable  & 1 to $2^{\verb+DATA_WIDTH_p+}-1$ & N/A & Feedback coefficient used to control the response time of the circuit; expressed as mu*fullscale \\
+			Property & mu                  & UShort & -              & -               & Writable  & 1 to $2^{\verb+DATA_WIDTH_p+}-1$ & N/A & Feedback coefficient used to control the response time of the circuit; expressed as mu*fullscale \\
 			\hline
-			Property & messageSize         & UShort & -              & -               & Readable, Writable  & 8192        & 8192    & Number of bytes in output message                            \\
+			Property & messageSize         & UShort & -              & -               & Writable  & 8192        & 8192    & Number of bytes in output message                            \\
 			\hline
 		\end{tabular}
 	\end{scriptsize}

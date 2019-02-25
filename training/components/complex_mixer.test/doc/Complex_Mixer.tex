@@ -253,9 +253,9 @@ training\_project/components/complex\_mixer.hdl/vivado\_ip/dds\_compiler.edf
 			\rowcolor{blue}
 			Name               & Type   & SequenceLength & ArrayDimensions & Accessibility      & Valid Range & Default & Usage                                                                         \\
 			\hline
-			\verb+enable+      & Bool   & -              & -               & Readable, Writable & Standard    & true    & Enable(true) or bypass(false) mixer                                           \\
+			\verb+enable+      & Bool   & -              & -               & Writable & Standard    & true    & Enable(true) or bypass(false) mixer                                           \\
 			\hline
-			\verb+phs_inc+     & Short  & -              & -               & Readable, Writable & *           & -8192   & Phase increment of NCO \scriptsize\begin{verbatim} * -2^(NCO_DATA_WIDTH_p-1)
+			\verb+phs_inc+     & Short  & -              & -               & Writable & *           & -8192   & Phase increment of NCO \scriptsize\begin{verbatim} * -2^(NCO_DATA_WIDTH_p-1)
 			to +2^(NCO_DATA_WIDTH_p-1)-1\end{verbatim}\\
 			\hline
 
@@ -270,7 +270,7 @@ training\_project/components/complex\_mixer.hdl/vivado\_ip/dds\_compiler.edf
 			\rowcolor{blue}
 			Type     & Name                      & Type  & SequenceLength & ArrayDimensions & Accessibility       & Valid Range & Default & Usage                                      \\
 			\hline
-			Property & \verb+data_select+     & Bool  & -              & -               & Readable, Writable & Standard    & false    & In Bypass Mode: selects data to output: 0=input data, 1=output of NCO   \\
+			Property & \verb+data_select+     & Bool  & -              & -               & Writable & Standard    & false    & In Bypass Mode: selects data to output: 0=input data, 1=output of NCO   \\
 			\hline
 		\end{tabular}
 	\end{scriptsize}

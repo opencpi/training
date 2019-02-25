@@ -27,7 +27,7 @@
  */
 
 #include "complex_mixer-worker.hh"
-#include "liquid.h"
+#include <liquid/liquid.h>
 #include <cmath>
 #include <iostream>
 #include <climits>

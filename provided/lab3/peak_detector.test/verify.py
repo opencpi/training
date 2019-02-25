@@ -110,7 +110,7 @@ def validation(argv):
     print 'file_min_peak = ', pymin
     print 'file_max_peak = ', pymax
 
-    if (min_peak != pymin) and (max_peak != pymax):
+    if (min_peak != pymin) or (max_peak != pymax):
         print color.RED + color.BOLD + 'FAILED, min/max values do not match' + color.END
         return
 

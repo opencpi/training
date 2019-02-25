@@ -5,5 +5,5 @@
 <ComponentSpec>
   <!-- Add property and port elements here -->
     <Property name="counter" volatile="true" type="uShort"></Property>
-    <Property name="max" readable="true" default="10" initial="true"></Property>
+    <Property name="max" default="10" initial="true"></Property>
 </ComponentSpec>
