@@ -50,7 +50,7 @@ begin
   enable <= TODO
 
   -----------------------------------------------------------------------------
-  -- 'idata_vld' enable primitives when enabled and input valid
+  -- 'idata_vld' enable peak detection when enabled and input valid
   -----------------------------------------------------------------------------
   idata_vld <= TODO
 

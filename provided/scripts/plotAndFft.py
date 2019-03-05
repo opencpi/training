@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # This file is protected by Copyright. Please refer to the COPYRIGHT file
 # distributed with this source distribution.
 #
@@ -21,7 +21,7 @@
 import numpy as np
 try:
     import matplotlib.pyplot as plt
-except ImportError:
+except (ImportError, RuntimeError):
     print("******* Error: python matplotlib is unavailable or not installed")
     sys.exit(1)
 import sys
@@ -51,7 +51,7 @@ def main():
     f = open(sys.argv[1], 'r')
     dataType = sys.argv[2].lower()
     numSamples = int(sys.argv[3])
-    sampleRate = int(sys.argv[4])
+    sampleRate = float(sys.argv[4])
     print "file is : " + f.name
     print "data is : " + dataType
     print "num samples is: " + str(numSamples)
@@ -59,15 +59,17 @@ def main():
 
     if dataType == "complex":
         print "Input is complex data"
-        #I/Q pair in a 32-bit vector (31:0) is Q(0) Q(1) I(0) I(1) in bytes 0123 little-Endian
-        #Thus Q is indexed at byte 0 and I is indexed at byte 2
-        dt_iq_pair = np.dtype((np.uint32, {'real_idx':(np.int16,2), 'imag_idx':(np.int16,0)}))
+        #I/Q pair in a 32-bit vector (31:0) is I(0) I(1) Q(0) Q(1) in bytes 0123 little-Endian
+        #Thus I is indexed at byte 0 and Q is indexed at byte 2
+        dt_iq_pair = np.dtype((np.uint32, {'real_idx':(np.int16,0), 'imag_idx':(np.int16,2)}))
         data = np.fromfile(f, dtype=dt_iq_pair)
+
         #Pull out I and Q and make lists for each
         iList = data['real_idx']
         qList = data['imag_idx']
-        iqList = list();
-        iqList_mag = list();
+        iqList = []
+        iqList_mag = []
+
         for a,data in enumerate(iList):
             iqList.append(complex(int(iList[int(a)]),int(qList[int(a)])))
 
@@ -89,7 +91,6 @@ def main():
 
         # sample spacing
         T = 1.0 / sampleRate
-        x = np.linspace(0.0, numSamples*T, numSamples)
 
         #Generate FFT bins
         xf = np.fft.fftfreq(numSamples, T)
