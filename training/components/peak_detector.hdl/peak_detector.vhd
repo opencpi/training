@@ -48,7 +48,7 @@ begin
   enable <= ctl_in.is_operating and in_in.ready and out_in.ready;
 
   -----------------------------------------------------------------------------
-  -- 'idata_vld' enable primitives when enabled and input valid
+  -- 'idata_vld' enable peak detection when enabled and input valid
   -----------------------------------------------------------------------------
   idata_vld <= enable and in_in.valid;
 
