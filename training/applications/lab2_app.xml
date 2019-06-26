@@ -1,0 +1,60 @@
+<!-- The \"lab2_app\" application xml file -->
+<application done="file_write_data">
+    <Instance component="ocpi.core.file_read" name="file_read">
+      <Property Name="fileName" value="idata/lab2_input_file.bin"></Property>
+      <Property Name="messageSize" Value="2048"></Property>
+    </Instance>
+    <Instance component="ocpi.training.peak_detector" name="peak_detector_file_out"></Instance>
+    <Instance component="ocpi.training.complex_mixer" name="complex_mixer"></Instance>
+    <Instance component="ocpi.training.peak_detector" name="peak_detector_agc_in"></Instance>
+    <Instance component="ocpi.training.agc_complex" name="agc_complex">
+      <Property Name="mu" Value="0x144E"></Property>
+      <Property Name="ref" Value="0x1B26"></Property>
+    </Instance>
+    <Instance component="ocpi.training.peak_detector" name="peak_detector_agc_out"></Instance>
+    <Instance component="ocpi.assets.util_comps.timestamper" name="timestamper"></Instance>
+    <Instance component="ocpi.training.time_demux" name="time_demux"></Instance>
+    <Instance component="ocpi.core.file_write" name="file_write_time">
+      <Property Name="fileName" value="odata/lab2_time_output_file.bin"></Property>
+    </Instance>
+    <Instance component="ocpi.core.file_write" name="file_write_data">
+      <Property Name="fileName" value="odata/lab2_data_output_file.bin"></Property>
+    </Instance>
+    <Connection>
+        <Port instance="file_read" name="out"></Port>
+        <Port instance="peak_detector_file_out" name="in"></Port>
+    </Connection>
+    <Connection>
+        <Port instance="peak_detector_file_out" name="out"></Port>
+        <Port instance="complex_mixer" name="in"></Port>
+    </Connection>
+    <Connection>
+        <Port instance="complex_mixer" name="out"></Port>
+        <Port instance="peak_detector_agc_in" name="in"></Port>
+    </Connection>
+    <Connection>
+        <Port instance="peak_detector_agc_in" name="out"></Port>
+        <Port instance="agc_complex" name="in"></Port>
+    </Connection>
+    <Connection>
+        <Port instance="agc_complex" name="out"></Port>
+        <Port instance="peak_detector_agc_out" name="in"></Port>
+    </Connection>
+    <Connection>
+        <Port instance="peak_detector_agc_out" name="out"></Port>
+        <Port instance="timestamper" name="in"></Port>
+    </Connection>
+    <Connection>
+        <Port instance="timestamper" name="out"></Port>
+        <Port instance="time_demux" name="Mux_In"></Port>
+    </Connection>
+    <Connection>
+        <Port instance="time_demux" name="Time_Out"></Port>
+        <Port instance="file_write_time" name="in"></Port>
+    </Connection>
+    <Connection>
+        <Port instance="time_demux" name="Data_Out"></Port>
+        <Port instance="file_write_data" name="in"></Port>
+    </Connection>
+</application>
+

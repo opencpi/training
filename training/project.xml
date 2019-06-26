@@ -1,0 +1,50 @@
+<project name="ocpi.training">
+  <hdl>
+    <assemblies>
+      <assembly name="lab2_most_hdl_assy" />
+      <assembly name="lab2_most_rcc_assy" />
+    </assemblies>
+    <primitives>
+      <primitive name="prims" />
+    </primitives>
+  </hdl>
+  <rcc />
+  <components>
+    <library name="components">
+      <workers>
+        <worker name="agc_complex.hdl" />
+        <worker name="complex_mixer.hdl" />
+        <worker name="complex_mixer.rcc" />
+        <worker name="counter.hdl" />
+        <worker name="peak_detector.hdl" />
+        <worker name="peak_detector.rcc" />
+        <worker name="time_demux.rcc" />
+      </workers>
+      <tests>
+        <test name="agc_complex.test" />
+        <test name="complex_mixer.test" />
+        <test name="counter.test" />
+        <test name="peak_detector.test" />
+        <test name="time_demux.test" />
+      </tests>
+      <specs>
+        <spec name="agc_complex-spec.xml" />
+        <spec name="peak_detector-spec.xml" />
+        <spec name="time_demux-spec.xml" />
+        <spec name="complex_mixer-spec.xml" />
+        <spec name="counter-spec.xml" />
+      </specs>
+    </library>
+  </components>
+  <applications>
+    <application name="idata">
+      <built target="N/A" />
+    </application>
+    <application name="odata">
+      <built target="N/A" />
+    </application>
+    <application name="scripts">
+      <built target="N/A" />
+    </application>
+  </applications>
+</project>
