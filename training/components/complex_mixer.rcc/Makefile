@@ -16,12 +16,4 @@
 # You should have received a copy of the GNU Lesser General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
-# This is the Makefile for worker complex_mixer.rcc
-RccStaticPrereqLibs=liquid
-# Pre-1.4 setup:
-# RccIncludeDirs+=/opt/opencpi/prerequisites/liquid/include/liquid/
-# RccCustomLibs=-lliquid
-# RccCustomLibs_centos7=/opt/opencpi/prerequisites/liquid/linux-c7-x86_64/lib/libliquid.a
-# RccCustomLibs_xilinx13_3=/opt/opencpi/prerequisites/liquid/linux-x13_3-arm/lib/libliquid.a
-
 include $(OCPI_CDK_DIR)/include/worker.mk

@@ -25,101 +25,94 @@
 library IEEE; use IEEE.std_logic_1164.all; use ieee.numeric_std.all;
 library ocpi; use ocpi.types.all; -- remove this to avoid all ocpi name collisions
 
-architecture rtl of peak_detector_worker is
+architecture rtl of worker is
 
   -- INITIALIZE THE CONSTANT TO THE CORRECT VALUE
-  -- HINT: Examine the OCS to determine the data type of the min/max_peak properties
-  constant DATA_WIDTH_c : integer := TODO;
+  -- Examine the OCS to determine the data type of the min/max_peak properties
+  constant c_data_width : integer := TODO;
 
-  signal enable         : std_logic;
-  signal idata_vld      : std_logic;
-  signal min_peak_rst   : std_logic;
-  signal max_peak_rst   : std_logic;
-  signal i_idata        : signed(DATA_WIDTH_c-1 downto 0);
-  signal q_idata        : signed(DATA_WIDTH_c-1 downto 0);
-  signal iq_min_peak    : signed(DATA_WIDTH_c-1 downto 0);
-  signal iq_max_peak    : signed(DATA_WIDTH_c-1 downto 0);
-  signal min_peak       : signed(DATA_WIDTH_c-1 downto 0);
-  signal max_peak       : signed(DATA_WIDTH_c-1 downto 0);
+  signal s_valid        : std_logic;
+  signal s_i            : signed(c_data_width-1 downto 0);
+  signal s_q            : signed(c_data_width-1 downto 0);
+  signal s_min_peak_rst : std_logic;
+  signal s_max_peak_rst : std_logic;
+  signal s_min_peak_iq  : signed(c_data_width-1 downto 0);
+  signal s_max_peak_iq  : signed(c_data_width-1 downto 0);
+  signal s_min_peak     : signed(c_data_width-1 downto 0);
+  signal s_max_peak     : signed(c_data_width-1 downto 0);
 
 begin
 
   -----------------------------------------------------------------------------
-  -- 'enable' when Control State is_operating and up/downstream Workers ready
+  -- Enable circuitry when input valid and output ready
   -----------------------------------------------------------------------------
-  enable <= TODO
+
+  s_valid <= TODO;
 
   -----------------------------------------------------------------------------
-  -- 'idata_vld' enable peak detection when enabled and input valid
+  -- Control Port Interface (WCI Port assignments)
   -----------------------------------------------------------------------------
-  idata_vld <= TODO
 
-  -- upper 16 bits of input data (note the signal declaration type: signed vs unsigned?)
-  i_idata      <= TODO;
-  -- lower 16 bits of input data (note the signal declaration type: signed vs unsigned?)
-  q_idata      <= TODO;
+  -- Volatile Properties: i.e the Worker "updates" the property values
+  props_out.min_peak <= TODO;
+  props_out.max_peak <= TODO;
 
-  -- PROVIDED
+  -- Reset property values when control plane reset active or property is read
+  s_min_peak_rst <= TODO;
+  s_max_peak_rst <= TODO;
+
+  -----------------------------------------------------------------------------
+  -- Data Port Interface (WSI Port assignments)
+  -----------------------------------------------------------------------------
+
+  -- Per the datasheet: Lower 16 bits of input data = i, Upper 16 bits of input data = q
+  -- Examination of the gen/{worker}-impl.vhd, shows in_in.data to be of type
+  -- "std_logic_vector", but s_idata_* are "signed".
+  -- Therefore, type casting is required here: signed(in_in.data(x downto x))
+  s_i <= signed(TODO);
+  s_q <= signed(TODO);
+
+  -- Reference gen/{worker}-impl.vhd for signals within the in_in record
+  -- and implement a simple "pass-thru" of the messaging signals.
+  in_out.take   <= TODO;  --When circuit is processing valid data
+  out_out.valid <= TODO;  --When circuit is processing valid data
+  out_out.data  <= TODO;  --Simply pass input -> output
+
+  -- PROVIDED : Capture Max/Min peak values
   peak_detect : process (ctl_in.clk)
   begin
     if rising_edge(ctl_in.clk) then
-      if min_peak_rst = '1' then
-        iq_min_peak(DATA_WIDTH_c-1)          <= ('0');
-        iq_min_peak(DATA_WIDTH_c-2 downto 0) <= (others => '1');
-        min_peak(DATA_WIDTH_c-1)             <= ('0');
-        min_peak(DATA_WIDTH_c-2 downto 0)    <= (others => '1');
-      elsif idata_vld = '1' then
-        if (i_idata < q_idata) then
-          iq_min_peak <= i_idata;
+      if s_min_peak_rst = '1' then
+        s_min_peak_iq(c_data_width-1)          <= ('0');
+        s_min_peak_iq(c_data_width-2 downto 0) <= (others => '1');
+        s_min_peak(c_data_width-1)             <= ('0');
+        s_min_peak(c_data_width-2 downto 0)    <= (others => '1');
+      elsif s_valid = '1' then
+        if (s_i < s_q) then
+          s_min_peak_iq <= s_i;
         else
-          iq_min_peak <= q_idata;
+          s_min_peak_iq <= s_q;
         end if;
-        if (iq_min_peak < min_peak) then
-          min_peak <= iq_min_peak;
+        if (s_min_peak_iq < s_min_peak) then
+          s_min_peak <= s_min_peak_iq;
         end if;
       end if;
-      if max_peak_rst = '1' then
-        iq_max_peak(DATA_WIDTH_c-1)          <= ('1');
-        iq_max_peak(DATA_WIDTH_c-2 downto 0) <= (others => '0');
-        max_peak(DATA_WIDTH_c-1)             <= ('1');
-        max_peak(DATA_WIDTH_c-2 downto 0)    <= (others => '0');
-      elsif idata_vld = '1' then
-        if (i_idata < q_idata) then
-          iq_max_peak <= q_idata;
+      if s_max_peak_rst = '1' then
+        s_max_peak_iq(c_data_width-1)          <= ('1');
+        s_max_peak_iq(c_data_width-2 downto 0) <= (others => '0');
+        s_max_peak(c_data_width-1)             <= ('1');
+        s_max_peak(c_data_width-2 downto 0)    <= (others => '0');
+      elsif s_valid = '1' then
+        if (s_i < s_q) then
+          s_max_peak_iq <= s_q;
         else
-          iq_max_peak <= i_idata;
+          s_max_peak_iq <= s_i;
         end if;
-        if (iq_max_peak > max_peak) then
-          max_peak <= iq_max_peak;
+        if (s_max_peak_iq > s_max_peak) then
+          s_max_peak <= s_max_peak_iq;
         end if;
       end if;
     end if;
   end process peak_detect;
 
-  -----------------------------------------------------------------------------
-  -- WSI Port assignments
-  -----------------------------------------------------------------------------
-  -- Reference gen/{worker}-impl.vhd for signals within the in_in record
-  -- and implement a 'pass-thru' of the messaging signals.
-
-  in_out.take         <= TODO;  -- Control state is_operating, up and downstream workers are ready
-  out_out.give        <= TODO;  -- Control state is_operating, up and downstream workers are ready
-  out_out.som         <= TODO;  -- Make assignment to simply pass input SOM
-  out_out.eom         <= TODO;  -- Make assignment to simply pass input EOM
-  out_out.valid       <= TODO;  -- Make assignment to simply pass input VALID
-  out_out.data        <= TODO;  -- Make assignment to simply pass input DATA
-  out_out.byte_enable <= TODO;  -- Make assignment to simply pass input BYTE_ENABLE
-
-  -----------------------------------------------------------------------------
-  -- Reset property values when the property is read by control plane
-  -----------------------------------------------------------------------------  
-  min_peak_rst <= TODO;  -- control plane reset or property min_peak_read
-  max_peak_rst <= TODO;  -- control plane reset or property max_peak_read
-
-  -----------------------------------------------------------------------------
-  -- Volatile Properties: i.e worker 'updates' the property values
-  -----------------------------------------------------------------------------
-  props_out.min_peak <= TODO;
-  props_out.max_peak <= TODO;
-  
 end rtl;

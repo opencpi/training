@@ -60,6 +60,12 @@ class Complex_mixerWorker : public Complex_mixerWorkerBase
 
   RCCResult run(bool /*timedout*/)
   {
+	// determine if end of file
+	if (in.eof()) {
+	  out.setEOF();
+	  return RCC_DONE;
+	}
+
     const IqstreamIqData* inData = in.iq().data().data();
     IqstreamIqData* outData = out.iq().data().data();
     const size_t num_of_elements = in.iq().data().size(); // size in IqstreamIqData units

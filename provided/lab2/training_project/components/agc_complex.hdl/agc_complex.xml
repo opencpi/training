@@ -1,10 +1,14 @@
-<HdlWorker language='vhdl' spec='agc_complex-spec.xml'>
-    <Property name="DATA_WIDTH_p" type="UShort" parameter="true" default="16"></Property>
-    <Property name="AVG_WINDOW_p" type="UShort" parameter="true" default="16"></Property>
-    <Property name="hold" type="Bool" writable="true" default="false"></Property>
-    <Property name="ref" type="UShort" writable="true" default="0x3FFF"></Property>
-    <Property name="mu" type="UShort" writable="true"></Property>
-    <Property name="messageSize" type="UShort" writable="true" default="8192"></Property>
-    <StreamInterface name="in" dataWidth="32"></StreamInterface>
-    <StreamInterface name="out" dataWidth="32"></StreamInterface>
+<HdlWorker language='vhdl' spec='agc_complex-spec' Version="2">
+  <Property Name="data_width" Type="uShort" Default="16" Parameter="true" 
+   Description="Worker internal non-sign-extended data width"></Property>
+  <Property Name="avg_window" Type="uShort" Default="16" Parameter="true" 
+   Description="Length of the averaging buffer; should be a power of two "></Property>
+  <Property Name="hold" Type="bool" Default="false" Writable="true" 
+   Description=" Hold disables the gain differential feedback circuit, thus maintaining the current gain"></Property>
+  <Property Name="ref" Type="uShort" Default="0x3fff" Writable="true" 
+   Description="Desired output amplitude expressed in percentage of full scale expected peak value in rms"></Property>
+  <Property Name="mu" Type="uShort" Writable="true" 
+   Description="Feedback coefficient used to control the response time of the circuit; expressed as mu*fullscale"></Property>
+  <StreamInterface Name="in" DataWidth="32"></StreamInterface>
+  <StreamInterface Name="out" DataWidth="32" InsertEOM="1"></StreamInterface>
 </HdlWorker>

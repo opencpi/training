@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # This file is protected by Copyright. Please refer to the COPYRIGHT file
 # distributed with this source distribution.
 #
@@ -39,18 +39,6 @@ import numpy as np
 import sys
 import os.path
 
-class color:
-    PURPLE = '\033[95m'
-    CYAN = '\033[96m'
-    DARKCYAN = '\033[36m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    END = '\033[0m'
-
 """
 Ex: python verify.py {sample-freq} {number_of_samples} {ofilename} {ifilename}
 Validate:
@@ -62,7 +50,7 @@ TEST #3: Two possibilities: 1) NORMAL MODE - Target tone tuned to DC, 2) BYPASS 
 if len(sys.argv) != 5:
     print('Invalid arguments:  usage is: verify.py <sample-freq> <num-samples> <output-file> <input-file>')
     sys.exit(1)
-dt_iq_pair = np.dtype((np.uint32, {'real_idx':(np.int16,2), 'imag_idx':(np.int16,0)}))
+dt_iq_pair = np.dtype((np.uint32, {'real_idx':(np.int16,0), 'imag_idx':(np.int16,2)}))
 # Read all input data as complex int16
 ifilename = open(sys.argv[4], 'rb')
 idata = np.fromfile(ifilename, dtype=dt_iq_pair, count=-1)
@@ -73,65 +61,51 @@ ofilename = open(sys.argv[3], 'rb')
 odata = np.fromfile(ofilename, dtype=dt_iq_pair, count=-1)
 ofilename.close()
 
-num_samples = int(sys.argv[2])
-sample_rate = float(sys.argv[1])
-enable = os.environ.get('OCPI_TEST_enable')
-phs_inc = float(os.environ.get('OCPI_TEST_phs_inc'))
-data_select = os.environ.get('OCPI_TEST_data_select')
+NUM_SAMPLES = int(sys.argv[2])
+SAMPLE_RATE = float(sys.argv[1])
+ENABLE = os.environ.get('OCPI_TEST_enable')
+PHS_INC = float(os.environ.get('OCPI_TEST_phs_inc'))
+DATA_SELECT = os.environ.get('OCPI_TEST_data_select')
 
-# Test that odata is not all zeros
+# Test #1 - Check that output data is not all zeros
 if all(odata == 0):
-    print color.RED + color.BOLD + 'FAILED, values are all zero' + color.END
+    print ('\tValues are all zero')
     sys.exit(1)
-else:
-    print '      PASS - File is not all zeros'
 
-# Test that odata is the expected amount
+# Test #2 - Check that output data is the expected amount
 # INCLUDES TRANSIENT and not FLUSHING of pipeline (USE THIS FOR v1.2)
 if len(odata) != len(idata):
-# INCLUDES TRANSIENT and FLUSHING of pipeline (USE THIS FOR v1.2 'ADVANCED')
-#if len(odata)-6 != len(idata):
-# EXCLUDES TRANSIENT and performs FLUSHING of pipeline (USE THIS FOR POST-v1.2 'ADVANCED')
-#if len(odata) != len(idata):
-    print color.RED + color.BOLD + 'FAILED, output file length is unexpected' + color.END
-    print color.RED + color.BOLD + 'Length ofilename = ', len(odata), 'while expected length is = ' + color.END, len(idata)
+    print ('Output file length is unexpected')
+    print ('Length = ', len(odata), 'while expected length is = ', len(idata))
     sys.exit(1)
-else:
-    print '      PASS - Input and output file lengths match'
 
-if(enable == 'true'): # => NORMAL MODE
-    complex_data = np.array(np.zeros(num_samples), dtype=np.complex)
-    for i in xrange(0,num_samples):
+# Test #3 - Check output data values
+if(ENABLE == 'true'): # => NORMAL MODE
+    complex_data = np.array(np.zeros(NUM_SAMPLES), dtype=np.complex)
+    for i in range(0,NUM_SAMPLES):
         complex_data[i] = complex(odata['real_idx'][i], odata['imag_idx'][i])
-    FFT = 1.0/num_samples * abs(np.fft.fft(complex_data,num_samples))
-    Max_FFT_freq=np.argmax(FFT)*sample_rate/num_samples
+    FFT = 1.0/NUM_SAMPLES * abs(np.fft.fft(complex_data,NUM_SAMPLES))
+    Max_FFT_freq=np.argmax(FFT)*SAMPLE_RATE/NUM_SAMPLES
     if Max_FFT_freq != 0.0:
-        print 'Fail: Max of FFT occurs at index: ',Max_FFT_freq, 'Hz (Should be 0)'
+        print ('Fail: Max of FFT occurs at index: ',Max_FFT_freq, 'Hz (Should be 0)')
         sys.exit(1)
-    else:
-        print '      PASS - Max of FFT occurs at index: ',Max_FFT_freq, 'Hz'
-else: # => BYPASS MODE
-    if (data_select == 'false'):
-# INCLUDES TRANSIENT and not FLUSHING of pipeline (USE THIS FOR v1.2)
-        if (idata != odata).all():
-# INCLUDES TRANSIENT and FLUSHING of pipeline (USE THIS FOR v1.2 'ADVANCED')
-#        if (idata != odata[0:-6]).all():
-# EXCLUDES TRANSIENT and performs FLUSHING of pipeline (USE THIS FOR POST-v1.2 'ADVANCED')
-#        if (idata != odata).all():
-            print 'Fail - Bypass Mode: Input and output file do not match'
-            sys.exit(1)
-        else:
-            print '      PASS - Bypass Mode: Input and output file match'
-"""
+    print ('\tResults (Normal Mode): FFT occurs at expect index', Max_FFT_freq, 'Hz')
 
+else: # => BYPASS MODE
+    if (DATA_SELECT == 'false'):
+        # INCLUDES TRANSIENT and not FLUSHING of pipeline (USE THIS FOR v1.2)
+        if (idata != odata).all():
+            print ('Fail - Bypass Mode: Input and output file do not match')
+            sys.exit(1)
+        print ("\tResults (Bypass Mode): Input and output file match")
+"""
 TODO: TEST IS ONLY VALID FOR HDL OUTPUT!
 - NEED TO BLOCK WHEN VERIFYING RCC OUTPUT or NOT RUN CONFIGURATION AGAINST RCC.
-
     else:
         # Calculate NCO tone for mixing with input
-        system_freq = sample_rate
+        system_freq = SAMPLE_RATE
         phase_acc_width = 16 # Configuration of the Xilinx CORE Generator: DDS module
-        nco_freq = ((system_freq * phs_inc) / (2**phase_acc_width))
+        nco_freq = ((system_freq * PHS_INC) / (2**phase_acc_width))
         #print '      NCO freq (calc) = ', nco_freq
         # Construct complex array of vectors for performing FFT
         # (PUT FFT INTO ITS OWN FUNCTION)

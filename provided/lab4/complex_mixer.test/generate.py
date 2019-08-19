@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # This file is protected by Copyright. Please refer to the COPYRIGHT file
 # distributed with this source distribution.
 #
@@ -44,7 +44,8 @@ import os.path
 if len(sys.argv) != 6:
     print("Invalid arguments:  usage is: generate.py <sample-freq> <target-freq> <amplitude> <num-samples> <output-file>")
     sys.exit(1)
-print "    GENERATE (I/Q 16b binary data file):"
+
+print ("\tGENERATE (I/Q 16b binary data file):")
 
 ofilename = sys.argv[5]
 # Create cosine & sine waveforms
@@ -59,7 +60,7 @@ real = np.cos(2*np.pi*Ft*t)
 imag = np.sin(2*np.pi*Ft*t)
 # Initialize empty array, sized to store 16b I/Q samples
 z = np.array(np.zeros(NUM_SAMPLES), 
-             dtype=np.dtype((np.uint32, {'real_idx':(np.int16,2), 'imag_idx':(np.int16,0)})))
+             dtype=np.dtype((np.uint32, {'real_idx':(np.int16,0), 'imag_idx':(np.int16,2)})))
 # Set the gain
 gain_i = AMPLITUDE / max(abs(real))
 gain_q = AMPLITUDE / max(abs(imag))
@@ -68,13 +69,13 @@ z['imag_idx'] = np.int16(imag * gain_q)
 
 # Save data to file
 f = open(ofilename, 'wb')
-for i in xrange(NUM_SAMPLES):
+for i in range(0,NUM_SAMPLES):
     f.write(z[i])
 f.close()
 
 # Summary
-print '      # of Bytes:', NUM_SAMPLES*4
-print '      # of I/Q (16b) samples:', NUM_SAMPLES/2
-print '      Sample Frequency:', Fs
-print '      Target Frequency:', Ft
-print '      Amplitude:', AMPLITUDE
+print ('\t# of Bytes:', NUM_SAMPLES*4)
+print ('\t# of I/Q (16b) samples:', NUM_SAMPLES/2)
+print ('\tSample Frequency:', Fs)
+print ('\tTarget Frequency:', Ft)
+print ('\tAmplitude:', AMPLITUDE)

@@ -23,52 +23,54 @@
 
 library IEEE; use IEEE.std_logic_1164.all; use ieee.numeric_std.all;
 library ocpi; use ocpi.types.all; -- remove this to avoid all ocpi name collisions
+
 architecture rtl of counter_worker is
-  signal enable          : std_logic;
-  signal counter         : unsigned(15 downto 0) := (others => '0');
+  
+  signal s_enable   : std_logic;
+  signal s_counter  : unsigned(15 downto 0) := (others => '0');
   -- finished becomes true when the counter reaches its "max" value 
-  signal finished        : std_logic := '0';
+  signal s_finished : std_logic             := '0';
 
   -- Added for debugging:
   -- step_counter determines whether the worker should proceed to count
-  signal step_counter    : std_logic := '0';
+  signal s_step_counter : std_logic := '0';
 
 begin
 
-ctl_out.finished <= finished;
+  ctl_out.finished <= s_finished;
 
--- If we ARE debugging, do nothing until the step property is written as true.
--- Then, step (increment counter) and wait for another step_written pulse
-debug_gen : if its(ocpi_debug) generate
-  step_counter <= '1' when (its(props_in.step) and (props_in.step_written = '1')) else '0';
-  enable <= '1' when (its(ctl_in.is_operating) and step_counter = '1') else '0';
-end generate debug_gen;
+  -- If we ARE debugging, do nothing until the step property is written as true.
+  -- Then, step (increment counter) and wait for another step_written pulse
+  debug_gen : if its(ocpi_debug) generate
+    s_step_counter <= std_logic(props_in.step) and std_logic(props_in.step_written);
+    s_enable       <= std_logic(ctl_in.is_operating) and s_step_counter;
+  end generate debug_gen;
 
--- Otherwise (not debugging) count as long as we are operating.
-enable_gen : if (not its(ocpi_debug)) generate
-  enable <= '1' when (its(ctl_in.is_operating)) else '0'; 
-end generate enable_gen; 
+  -- Otherwise (not debugging) count as long as we are operating.
+  enable_gen : if (not its(ocpi_debug)) generate
+    s_enable <= std_logic(ctl_in.is_operating);
+  end generate enable_gen;
 
-count : process (ctl_in.clk)
-begin
-  -- Count until we reach max. Then we are finished.
-  if rising_edge(ctl_in.clk) then
-    if ctl_in.reset = '1' then
-      counter <= (others => '0');
-      finished <= '0';
-    elsif its(enable) then
-      if (not finished) then
-        if (counter < props_in.max) then
-          counter <= counter + 2;
-        else
-          finished <= '1';
+  count : process (ctl_in.clk)
+  begin
+    -- Count until we reach max. Then we are finished.
+    if rising_edge(ctl_in.clk) then
+      if (ctl_in.reset = '1') then
+        s_counter  <= (others => '0');
+        s_finished <= '0';
+      elsif (s_enable = '1') then
+        if (not s_finished) then
+          if (s_counter < props_in.max) then
+            s_counter <= s_counter + 2;
+          else
+            s_finished <= '1';
+          end if;
         end if;
       end if;
     end if;
-  end if;
-end process count;
+  end process count;
 
--- output the counter value
-props_out.counter <= counter;
-
+  -- output the counter value
+  props_out.counter <= s_counter;
+  
 end rtl;

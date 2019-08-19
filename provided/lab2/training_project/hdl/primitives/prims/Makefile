@@ -25,14 +25,23 @@
 # libraries are in dependency order.
 #Libraries=
 
+
+
 # Set this variable to the list of source files in dependency order
 # If it is not set, all .vhd and .v files will be compiled in wildcard/random order,
 # except that any *_pkg.vhd files will be compiled first
 SourceFiles=prims_pkg.vhd agc/src/agc.vhd
 
+
 # Remember two rules for OpenCPI primitive libraries, in order to be usable with all tools:
 # 1. Any entity (VHDL) or module (verilog) must have a VHDL component declaration in prims_pkg.vhd
 # 2. Entities or modules to be used from outside the library must have the file name
 #    be the same as the entity/module name, and one entity/module per file.
+
+
+
+
+
+
 
 include $(OCPI_CDK_DIR)/include/hdl/hdl-library.mk

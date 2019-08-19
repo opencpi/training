@@ -19,19 +19,21 @@
 -- This package enables VHDL code to instantiate all entities and modules in this library
 library ieee; use IEEE.std_logic_1164.all; use ieee.numeric_std.all;
 package prims is
-component AGC
-  generic (
-    DATA_WIDTH : integer := 16;
-    NAVG       : integer := 16);
-  port (
-    CLK     : in  std_logic;
-    RST     : in  std_logic;
-    REG_WR  : in  std_logic;
-    REF     : in  std_logic_vector(DATA_WIDTH-1 downto 0);
-    MU      : in  std_logic_vector(DATA_WIDTH-1 downto 0);
-    DIN_VLD : in  std_logic;
-    HOLD    : in  std_logic;
-    DIN     : in  std_logic_vector(DATA_WIDTH-1 downto 0);
-    DOUT    : out std_logic_vector(DATA_WIDTH-1 downto 0));
-end component AGC;
+
+  component agc
+    generic (
+      g_data_width : integer := 16;
+      g_navg       : integer := 16);
+    port (
+      i_clk   : in  std_logic;
+      i_rst   : in  std_logic;
+      i_write : in  std_logic;
+      i_ref   : in  std_logic_vector(g_data_width-1 downto 0);
+      i_mu    : in  std_logic_vector(g_data_width-1 downto 0);
+      i_hold  : in  std_logic;
+      i_valid : in  std_logic;
+      i_data  : in  std_logic_vector(g_data_width-1 downto 0);
+      o_data  : out std_logic_vector(g_data_width-1 downto 0));
+  end component agc;
+
 end package prims;

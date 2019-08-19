@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # This file is protected by Copyright. Please refer to the COPYRIGHT file
 # distributed with this source distribution.
 #
@@ -39,25 +39,13 @@ import os.path
 import os
 import re
 
-class color:
-    PURPLE = '\033[95m'
-    CYAN = '\033[96m'
-    DARKCYAN = '\033[36m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    END = '\033[0m'
-
 def validation(argv):
-    print "*** Validate output against expected data ***"
+
     if len(argv) < 2:
         print ("Exit: Need to know how many samples")
         return
     elif len(argv) < 3:
-        print("Exit: Enter an output filename")
+        print ("Exit: Enter an output filename")
         return
 
     num_samples = int(argv[1])
@@ -86,43 +74,38 @@ def validation(argv):
         print("Exit: log file does not contain max/min peak final values")
         return
     #Read all of input data file as complex int16
-    print 'File to validate: ', argv[2]
+    print ("File to validate: ", argv[2])
 
     ofile = open(argv[2], 'rb')
-    dout = np.fromfile(ofile, dtype=np.dtype((np.uint32, {'real_idx':(np.int16,2), 'imag_idx':(np.int16,0)})), count=-1)
+    dout = np.fromfile(ofile, dtype=np.dtype((np.uint32, {'real_idx':(np.int16,0), 'imag_idx':(np.int16,2)})), count=-1)
     ofile.close()
-    #Ensure dout is not all zeros
+
+    # TEST #1: odata is not all zeros
     if all(dout == 0):
-        print color.RED + color.BOLD + 'FAILED, values are all zero' + color.END
-        return
-    #Ensure that dout is the expected amount of data
+        print ("Values are all zero")
+        sys.exit(1)
+
+    # TEST #2: odata is the expected amount
     if len(dout) != num_samples:
-        print color.RED + color.BOLD + 'FAILED, input file length is unexpected' + color.END
-        print color.RED + color.BOLD + 'Length dout = ', len(dout), 'while expected length is = ' + color.END, num_samples
-        return
+        print ("Input file length is unexpected")
+        print ("Length dout = ", len(dout), "while expected length is = ", num_samples)
+        sys.exit(1)
 
    # Calculate the maximum in python for verification
     pymin = min(min(dout['real_idx']), min(dout['imag_idx']))
     pymax = max(max(dout['real_idx']), max(dout['imag_idx']))
 
-    print 'uut_min_peak = ', min_peak
-    print 'uut_max_peak = ', max_peak
-    print 'file_min_peak = ', pymin
-    print 'file_max_peak = ', pymax
+    print ("uut_min_peak = ", min_peak)
+    print ("uut_max_peak = ", max_peak)
+    print ("file_min_peak = ", pymin)
+    print ("file_max_peak = ", pymax)
 
     if (min_peak != pymin) or (max_peak != pymax):
-        print color.RED + color.BOLD + 'FAILED, min/max values do not match' + color.END
-        return
-
-    print 'Data matched expected results.'
-    print color.GREEN + color.BOLD + 'PASSED' + color.END
-    print '*** End validation ***\n'
+        print ("min/max values do not match")
+        sys.exit(1)
 
 def main():
-    print "\n","*"*80
-    print "*** Python: Peak Detector ***"
     validation(sys.argv)
-
 
 if __name__ == '__main__':
     main()

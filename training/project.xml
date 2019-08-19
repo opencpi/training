@@ -28,11 +28,11 @@
         <test name="time_demux.test" />
       </tests>
       <specs>
+        <spec name="counter-spec.xml" />
         <spec name="agc_complex-spec.xml" />
+        <spec name="complex_mixer-spec.xml" />
         <spec name="peak_detector-spec.xml" />
         <spec name="time_demux-spec.xml" />
-        <spec name="complex_mixer-spec.xml" />
-        <spec name="counter-spec.xml" />
       </specs>
     </library>
   </components>

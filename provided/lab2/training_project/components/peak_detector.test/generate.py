@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # This file is protected by Copyright. Please refer to the COPYRIGHT file
 # distributed with this source distribution.
 #
@@ -37,20 +37,8 @@ import numpy as np
 import sys
 import os.path
 
-class color:
-    PURPLE = '\033[95m'
-    CYAN = '\033[96m'
-    DARKCYAN = '\033[36m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    END = '\033[0m'
-
 def generate(argv):
-    print "*** Generate input (binary data file) ***"
+
     if len(argv) < 2:
         print("Exit: Enter number of input samples (int:1 to ?)")
         return
@@ -68,7 +56,7 @@ def generate(argv):
     t = np.arange(0,num_samples*Ts,Ts,dtype=np.float)
     real = np.cos(Tone13*2*np.pi*t)
     imag = np.sin(Tone13*2*np.pi*t)
-    out_data = np.array(np.zeros(num_samples), dtype=np.dtype((np.uint32, {'real_idx':(np.int16,2), 'imag_idx':(np.int16,0)})))
+    out_data = np.array(np.zeros(num_samples), dtype=np.dtype((np.uint32, {'real_idx':(np.int16,0), 'imag_idx':(np.int16,2)})))
 
     #pick a gain at 95% max value - i.e. back off a little to avoid file
     #generation overflow. This results in complex amplitudes that swing between
@@ -80,17 +68,14 @@ def generate(argv):
 
     #Save data file
     f = open(filename, 'wb')
-    for i in xrange(0,num_samples):
+    for i in range(0,num_samples):
         f.write(out_data[i])
     f.close()
 
-    print 'Output filename: ', filename
-    print 'Number of samples: ', num_samples
-    print '*** End of file generation ***\n'
+    print ("\tOutput filename: ", filename)
+    print ("\tNumber of samples: ", num_samples)
 
 def main():
-    print "\n","*"*80
-    print "*** Python: Peak Detector ***"
     generate(sys.argv)
 
 if __name__ == '__main__':

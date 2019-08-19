@@ -4,6 +4,6 @@
      Add port elements for i/o ports -->
 <ComponentSpec>
   <!-- Add property and port elements here -->
-    <Port name="in" producer="false" protocol="iqstream_protocol"></Port>
-    <Port name="out" producer="true" protocol="iqstream_protocol"></Port>
+    <Port Name="in" Protocol="iqstream_protocol"></Port>
+    <Port Name="out" Protocol="iqstream_protocol" Producer="true"></Port>
 </ComponentSpec>

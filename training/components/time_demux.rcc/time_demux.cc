@@ -45,6 +45,12 @@ class Time_demuxWorker : public Time_demuxWorkerBase {
   }
 
   RCCResult run(bool /*timedout*/) {
+	// determine if end of file
+	if (Mux_In.eof()) {
+	  Data_Out.setEOF();
+	  Time_Out.setEOF();
+	  return RCC_DONE;
+	}
     // Determine opcode
     switch (Mux_In.opCode()) {
       case Iqstream_with_syncIq_OPERATION:

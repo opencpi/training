@@ -4,8 +4,8 @@
      Add port elements for i/o ports -->
 <ComponentSpec>
   <!-- Add property and port elements here -->
-    <Property name="max_peak" volatile="true" type="Short"></Property>
-    <Property name="min_peak" type="Short" volatile="true"></Property>
-    <Port name="out" producer="true" protocol="iqstream_protocol"></Port>
-    <Port name="in" producer="false" protocol="iqstream_protocol"></Port>
+    <Port Name="in" Protocol="iqstream_protocol"></Port>
+    <Port Name="out" Protocol="iqstream_protocol" Producer="true"></Port>
+    <Property Name="max_peak" Type="short" Volatile="true"></Property>
+    <Property Name="min_peak" Type="short" Volatile="true"></Property>
 </ComponentSpec>

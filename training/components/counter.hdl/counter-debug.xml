@@ -1,4 +1,4 @@
-<HdlWorker language='vhdl' spec='counter-spec'>
-  <Property name="step" type="bool" default="false" writable="true" Debug="true" Readable="true"></Property>
-    <SpecProperty Name="max" Readable="true"></SpecProperty>
+<HdlWorker Language='vhdl' Spec='counter-spec'>
+  <Property Name="step" Type="bool" Default="false" Writable="true" Debug="true" Readback="true"></Property>
+  <SpecProperty Name="max" Readback="true"></SpecProperty>
 </HdlWorker>

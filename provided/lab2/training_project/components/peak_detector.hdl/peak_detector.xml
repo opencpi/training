@@ -1,6 +1,6 @@
-<HdlWorker language='vhdl' spec='peak_detector-spec'>
+<HdlWorker language='vhdl' spec='peak_detector-spec' Version="2">
+    <StreamInterface Name="in" DataWidth="32"></StreamInterface>
+    <StreamInterface Name="out" DataWidth="32" InsertEOM="1"></StreamInterface>
 
-  <StreamInterface Name="in"  DataWidth="32"/>
-  <StreamInterface Name="out" DataWidth="32"/>
 
 </HdlWorker>

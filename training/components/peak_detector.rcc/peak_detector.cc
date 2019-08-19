@@ -52,6 +52,12 @@ class Peak_detectorWorker : public Peak_detectorWorkerBase {
 
   RCCResult run(bool /*timedout*/) {
 
+    // determine if end of file
+	if (in.eof()) {
+	  out.setEOF();
+	  return RCC_DONE;
+	}
+
     // 1. Make sure there is room on the output port
     const size_t num_of_elements = in.iq().data().size();
     out.iq().data().resize(num_of_elements);

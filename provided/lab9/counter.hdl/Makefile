@@ -17,11 +17,4 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
 # This is the Makefile for worker counter.hdl
-
-# Build the worker for ocpi_debug false and true
-# Allow application to choose the value
-# Still need to set ocpi_debug to true in OAS
-# and the HDL Assembly xml to enable it.
-ParamValues_ocpi_debug=false/true
-
 include $(OCPI_CDK_DIR)/include/worker.mk

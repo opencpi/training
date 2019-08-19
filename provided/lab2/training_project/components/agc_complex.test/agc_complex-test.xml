@@ -1,6 +1,11 @@
-<tests useHDLFileIo='true'>
-  <input port='in' script='generate.py 32768' messagesize='8192'/>
-  <output port='out' script='verify.py 32768' view='view.sh'/>
-  <property name='ref' value='0x1B26'/>
-  <property name='mu' value='0x144E'/>
-</tests>
+<!-- This is the test xml for testing component "agc_complex" -->
+<Tests UseHDLFileIo='true'>
+  <!-- Here are typical examples of generating for an input port and verifying results
+       at an output port-->
+    <Input Port="in" Script="generate.py 32768"></Input>
+    <Output Port="out" Script="verify.py 32768" View="view.sh"></Output>
+  <!-- Set properties here.
+       Use Test='true' to create a test-exclusive property. -->
+    <Property Name="ref" Values="0x1B26"></Property>
+    <Property Name="mu" Values="0x144E"></Property>
+</Tests>

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # This file is protected by Copyright. Please refer to the COPYRIGHT file
 # distributed with this source distribution.
 #
@@ -40,10 +40,6 @@ import struct
 import numpy as np
 import sys
 
-print "\n","*"*80
-print "*** Python: AGC Complex ***"
-
-print "*** Generate input (binary data file) ***"
 if len(sys.argv) < 2:
     print("Exit: Enter number of input samples (int:1 to ?)")
     sys.exit(1)
@@ -60,30 +56,31 @@ Ts = 1.0/float(Fs)
 t = np.arange(0,num_samples*Ts,Ts,dtype=np.float)
 real = np.cos(2*np.pi*t)
 imag = np.sin(2*np.pi*t)
-out_data = np.array(np.zeros(num_samples), dtype=np.dtype((np.uint32, {'real_idx':(np.int16,2), 'imag_idx':(np.int16,0)})))
+out_data = np.array(np.zeros(num_samples), dtype=np.dtype((np.uint32, {'real_idx':(np.int16,0), 'imag_idx':(np.int16,2)})))
+
 #must use same gain on both rails to avoid I/Q spectral image
 gain_pt_2 = 32767*0.2 / max(abs(real))
 gain_pt_3 = 32767*0.3 / max(abs(real))
 gain_pt_9 = 32767*0.9 / max(abs(real))
-for i in xrange(0,num_samples/4):
+
+for i in range(0,int(num_samples/4)):
     out_data['real_idx'][i] = np.rint(real[i] * gain_pt_2)
     out_data['imag_idx'][i] = np.rint(imag[i] * gain_pt_2)
-for i in xrange(num_samples/4,num_samples/2):
+for i in range(int(num_samples/4),int(num_samples/2)):
     out_data['real_idx'][i] = np.rint(real[i] * gain_pt_9)
     out_data['imag_idx'][i] = np.rint(imag[i] * gain_pt_9)
-for i in xrange(num_samples/2,num_samples*3/4):
+for i in range(int(num_samples/2),int(num_samples*3/4)):
     out_data['real_idx'][i] = np.rint(real[i] * gain_pt_2)
     out_data['imag_idx'][i] = np.rint(imag[i] * gain_pt_2)
-for i in xrange(num_samples*3/4,num_samples):
+for i in range(int(num_samples*3/4),int(num_samples)):
     out_data['real_idx'][i] = np.rint(real[i] * gain_pt_3)
     out_data['imag_idx'][i] = np.rint(imag[i] * gain_pt_3)
 
 #Save data file
 f = open(filename, 'wb')
-for i in xrange(0,num_samples):
+for i in range(0,num_samples):
     f.write(out_data[i])
 f.close()
 
-print 'Output filename: ', filename
-print 'Number of samples: ', num_samples
-print '*** End of file generation ***\n'
+print ("Output filename: ", filename)
+print ("Number of samples: ", num_samples)

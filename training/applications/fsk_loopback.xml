@@ -1,91 +1,91 @@
-<!-- The \"fsk_loopback\" application xml file -->
-<application done="file_write">
-    <Instance component="ocpi.core.file_read" name="file_read">
-        <Property name="fileName" value="FSK/idata/Os.jpeg"></Property>
-        <Property name="messageSize" value="2048"></Property>
+<!-- The fsk_loopback application xml file -->
+<Application Done="file_write">
+    <Instance Component="ocpi.core.file_read" Name="file_read">
+        <Property Name="filename" Value="FSK/idata/Os.jpeg"></Property>
     </Instance>
-    <Instance component="ocpi.assets.comms_comps.mfsk_mapper" name="mfsk_mapper">
-        <Property name="symbols" value="-32768,32767"></Property>
+    <Instance Component="ocpi.assets.comms_comps.mfsk_mapper" Name="mfsk_mapper">
+        <Property Name="symbols" Value="-32768,32767"></Property>
     </Instance>
-    <Instance component="ocpi.assets.util_comps.zero_pad" name="zero_pad">
-        <Property name="num_zeros" value="38"></Property>
+    <Instance Component="ocpi.assets.util_comps.zero_pad" Name="zero_pad">
+        <Property Name="num_zeros" Value="38"></Property>
     </Instance>
-    <Instance component="ocpi.assets.dsp_comps.fir_real_sse" name="tx_fir">
-        <Property name="taps" valueFile="FSK/idata/tx_rrcos_taps.dat" ValueFile="FSK/idata/tx_rrcos_taps.dat"></Property>
+    <Instance Component="ocpi.assets.dsp_comps.fir_real_sse" Name="tx_fir">
+        <Property Name="taps" ValueFile="FSK/idata/tx_rrcos_taps.dat"></Property>
     </Instance>
-    <Instance component="ocpi.assets.dsp_comps.cic_int" name="cic_int">
-        <Property name="R" value="16"></Property>
-        <Property name="ACC_WIDTH" value="28"></Property>
+    <Instance Component="ocpi.assets.dsp_comps.phase_to_amp_cordic" Name="phase_to_amp_cordic">
+        <Property Name="magnitude" Value="20000"></Property>
+        <Property Name="STAGES" Value="16"></Property>
     </Instance>
-    <Instance component="ocpi.assets.dsp_comps.phase_to_amp_cordic" name="phase_to_amp_cordic">
-        <Property name="magnitude" value="20000"></Property>
-        <Property name="STAGES" value="16"></Property>
+    <Instance Component="ocpi.assets.dsp_comps.cic_int" Name="cic_int">
+        <Property Name="R" Value="16"></Property>
+        <Property Name="ACC_WIDTH" Value="28"></Property>
     </Instance>
-    <Instance component="ocpi.assets.dsp_comps.complex_mixer" name="complex_mixer">
-        <Property name="enable" value="false"></Property>
+    <Instance Component="ocpi.assets.dsp_comps.complex_mixer" Name="complex_mixer">
+        <Property Name="enable" Value="False"></Property>
     </Instance>
-    <Instance component="ocpi.assets.dsp_comps.cic_dec" name="cic_dec">
-        <Property name="R" value="16"></Property>
-        <Property name="ACC_WIDTH" value="28"></Property>
+    <Instance Component="ocpi.assets.dsp_comps.cic_dec" Name="cic_dec">
+        <Property Name="R" Value="16"></Property>
+        <Property Name="ACC_WIDTH" Value="28"></Property>
     </Instance>
-    <Instance component="ocpi.assets.dsp_comps.rp_cordic" name="rp_cordic"></Instance>
-    <Instance component="ocpi.assets.dsp_comps.fir_real_sse" name="rx_fir">
-        <Property name="taps" ValueFile="FSK/idata/rx_rrcos_taps.dat"></Property>
+    <Instance Component="ocpi.assets.dsp_comps.rp_cordic" Name="rp_cordic">
     </Instance>
-    <Instance component="ocpi.assets.dsp_comps.baudTracking" name="baudTracking">
-        <Property name="SPB" value="39"></Property>
-        <Property name="BaudAvrCount" value="10"></Property>
+    <Instance Component="ocpi.assets.dsp_comps.fir_real_sse" Name="rx_fir">
+        <Property Name="taps" ValueFile="FSK/idata/rx_rrcos_taps.dat"></Property>
     </Instance>
-    <Instance component="ocpi.assets.dsp_comps.real_digitizer" name="real_digitizer"></Instance>
-    <Instance component="ocpi.core.file_write" name="file_write">
-        <Property name="fileName" value="out.out"></Property>
+    <Instance Component="ocpi.assets.dsp_comps.baudTracking" Name="baudTracking">
+        <Property Name="SPB" Value="39"></Property>
+        <Property Name="BaudAvrCount" Value="10"></Property>
+    </Instance>
+    <Instance Component="ocpi.assets.dsp_comps.real_digitizer" Name="real_digitizer"></Instance>
+    <Instance Component="ocpi.core.file_write" Name="file_write">
+        <Property Name="filename" Value="out.out"></Property>
     </Instance>
     <Connection>
-        <Port instance="file_read" name="out"></Port>
-        <Port instance="mfsk_mapper" name="in"></Port>
+        <Port Instance="file_read" Name="out"></Port>
+        <Port Instance="mfsk_mapper" Name="in"></Port>
     </Connection>
     <Connection>
-        <Port instance="mfsk_mapper" name="out"></Port>
-        <Port instance="zero_pad" name="in"></Port>
+        <Port Instance="mfsk_mapper" Name="out"></Port>
+        <Port Instance="zero_pad" Name="in"></Port>
     </Connection>
     <Connection>
-        <Port instance="zero_pad" name="out"></Port>
-        <Port instance="tx_fir" name="in"></Port>
+        <Port Instance="zero_pad" Name="out"></Port>
+        <Port Instance="tx_fir" Name="in"></Port>
     </Connection>
     <Connection>
-        <Port instance="tx_fir" name="out"></Port>
-        <Port instance="phase_to_amp_cordic" name="in"></Port>
+        <Port Instance="tx_fir" Name="out"></Port>
+        <Port Instance="phase_to_amp_cordic" Name="in"></Port>
     </Connection>
     <Connection>
-        <Port instance="phase_to_amp_cordic" name="out"></Port>
-        <Port instance="cic_int" name="in"></Port>
+        <Port Instance="phase_to_amp_cordic" Name="out"></Port>
+        <Port Instance="cic_int" Name="in"></Port>
     </Connection>
     <Connection>
-        <Port instance="cic_int" name="out"></Port>
-        <Port instance="complex_mixer" name="in"></Port>
+        <Port Instance="cic_int" Name="out"></Port>
+        <Port Instance="complex_mixer" Name="in"></Port>
     </Connection>
     <Connection>
-        <Port instance="complex_mixer" name="out"></Port>
-        <Port instance="cic_dec" name="in"></Port>
+        <Port Instance="complex_mixer" Name="out"></Port>
+        <Port Instance="cic_dec" Name="in"></Port>
     </Connection>
     <Connection>
-        <Port instance="cic_dec" name="out"></Port>
-        <Port instance="rp_cordic" name="in"></Port>
+        <Port Instance="cic_dec" Name="out"></Port>
+        <Port Instance="rp_cordic" Name="in"></Port>
     </Connection>
     <Connection>
-        <Port instance="rp_cordic" name="out"></Port>
-        <Port instance="rx_fir" name="in"></Port>
+        <Port Instance="rp_cordic" Name="out"></Port>
+        <Port Instance="rx_fir" Name="in"></Port>
     </Connection>
     <Connection>
-        <Port instance="rx_fir" name="out"></Port>
-        <Port instance="baudTracking" name="in"></Port>
+        <Port Instance="rx_fir" Name="out"></Port>
+        <Port Instance="baudTracking" Name="in"></Port>
     </Connection>
     <Connection>
-        <Port instance="baudTracking" name="out"></Port>
-        <Port instance="real_digitizer" name="in"></Port>
+        <Port Instance="baudTracking" Name="out"></Port>
+        <Port Instance="real_digitizer" Name="in"></Port>
     </Connection>
     <Connection>
-        <Port instance="real_digitizer" name="out"></Port>
-        <Port instance="file_write" name="in"></Port>
+        <Port Instance="real_digitizer" Name="out"></Port>
+        <Port Instance="file_write" Name="in"></Port>
     </Connection>
-</application>
+</Application>

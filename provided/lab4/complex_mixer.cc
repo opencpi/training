@@ -78,6 +78,12 @@ class Complex_mixerWorker : public Complex_mixerWorkerBase
 
   RCCResult run(bool /*timedout*/)
   {
+    // determine if end of file
+    if (in.???) { // <---- if input ports gets a end of file 
+      out.???;    // <---- pass on a end of file to output port
+      return RCC_DONE;
+    }
+
     // get access to the input buffer: see slides, gen/complex_mixer-worker.hh, and iqstream protocol
     const IqstreamIqData* inData = ???;
                             /*     ^  ^    ^      ^------ The Iqstream structs

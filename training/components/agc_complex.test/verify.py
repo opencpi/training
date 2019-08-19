@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # This file is protected by Copyright. Please refer to the COPYRIGHT file
 # distributed with this source distribution.
 #
@@ -40,22 +40,6 @@ the UUT output.
 import numpy as np
 import sys
 
-class color:
-    PURPLE = '\033[95m'
-    CYAN = '\033[96m'
-    DARKCYAN = '\033[36m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    END = '\033[0m'
-
-print "\n","*"*80
-print "*** Python: AGC Complex ***"
-
-print "*** Validate output against expected data ***"
 if len(sys.argv) < 2:
     print ("Exit: Need to know how many input samples")
     sys.exit(1)
@@ -68,26 +52,29 @@ elif len(sys.argv) < 4:
 
 num_samples = int(sys.argv[1])
 
+dt_iq_pair = np.dtype((np.uint32, {'real_idx':(np.int16,0), 'imag_idx':(np.int16,2)}))
+
 # Read all of input data file as complex int16
-print 'Input file to validate: ', sys.argv[3]
-ifx = open(sys.argv[3], 'rb')
-din = np.fromfile(ifx, dtype=np.dtype((np.uint32, {'real_idx':(np.int16,2), 'imag_idx':(np.int16,0)})), count=-1)
-ifx.close()
+print ("Input file to validate: ", sys.argv[3])
+ifilename = open(sys.argv[3], 'rb')
+idata = np.fromfile(ifilename, dtype=dt_iq_pair, count=-1)
+ifilename.close()
 
 # Read all of output data file as complex int16
-print 'Output file to validate: ', sys.argv[2]
-ofx = open(sys.argv[2], 'rb')
-dout = np.fromfile(ofx, dtype=np.dtype((np.uint32, {'real_idx':(np.int16,2), 'imag_idx':(np.int16,0)})), count=-1)
-ofx.close()
+print ("Output file to validate: ", sys.argv[2])
+ofilename = open(sys.argv[2], 'rb')
+odata = np.fromfile(ofilename, dtype=dt_iq_pair, count=-1)
+ofilename.close()
 
-# Ensure dout is not all zeros
-if all(dout == 0):
-    print color.RED + color.BOLD + 'FAILED, values are all zero' + color.END
+# TEST #1: odata is not all zeros
+if all(odata == 0):
+    print ("Values are all zero")
     sys.exit(1)
-# Ensure that dout is the expected amount of data
-if len(dout) != num_samples:
-    print color.RED + color.BOLD + 'FAILED, input file length is unexpected' + color.END
-    print color.RED + color.BOLD + 'Length dout = ', len(dout), 'while expected length is = ' + color.END, num_samples
+
+# TEST #2: odata is the expected amount
+if len(odata) != num_samples:
+    print ("Output file length is unexpected")
+    print ("Length ofilename = ", len(odata), "while expected length is = ", num_samples)
     sys.exit(1)
 
 # Create complex arrays for both input and outputd data
@@ -96,16 +83,16 @@ o_complex_data = np.array(np.zeros(num_samples), dtype=np.complex64)
 
 # For AV v1.2: Start at 1 to have an extra 'zero' word at the beginning to align with o_complex_data
 # For AV post-v1.2: Start at 0, but VHDL must be modified to skip first output sample (SOM and not VALID)
-for i in xrange(1,num_samples):
-    i_complex_data[i] = complex(din['real_idx'][i-1], din['imag_idx'][i-1])
+for i in range(1,num_samples):
+    i_complex_data[i] = complex(idata['real_idx'][i-1], idata['imag_idx'][i-1])
 
-for i in xrange(0,num_samples):
-    o_complex_data[i] = complex(dout['real_idx'][i], dout['imag_idx'][i])
+for i in range(0,num_samples):
+    o_complex_data[i] = complex(odata['real_idx'][i], odata['imag_idx'][i])
 
-print 'Real Input Avg  =  ', np.mean(i_complex_data.real)
-print 'Imag Input Avg  =  ', np.mean(i_complex_data.imag)
-print 'Real Output Avg =  ', np.mean(o_complex_data.real)
-print 'Imag Output Avg =  ', np.mean(o_complex_data.imag)
+print ("Real Input Avg  =  ", np.mean(i_complex_data.real))
+print ("Imag Input Avg  =  ", np.mean(i_complex_data.imag))
+print ("Real Output Avg =  ", np.mean(o_complex_data.real))
+print ("Imag Output Avg =  ", np.mean(o_complex_data.imag))
 
 # Perform the AGC function on the input data
 Navg   = 16
@@ -120,7 +107,7 @@ err     = np.array(np.zeros(num_samples), dtype=np.complex64)   # loop error
 ydet    = np.array(np.zeros(num_samples), dtype=np.complex64)   # output detected
 y       = np.array(np.zeros(num_samples+1), dtype=np.complex64) # output
 
-for i in xrange(Navg-1,num_samples): # lagging by Navg samples
+for i in range(Navg-1,num_samples): # lagging by Navg samples
     # detecting output level
     det_buf.real = y.real[i+1-Navg:i+1] # buffering
     det_buf.imag = y.imag[i+1-Navg:i+1] # buffering
@@ -144,51 +131,39 @@ for i in xrange(Navg-1,num_samples): # lagging by Navg samples
     y.imag[i+1] = np.rint(gain.imag[i] * i_complex_data.imag[i])
 
 # compare python AGC (y) to UUT output (o_complex_data)
-for i in xrange(Navg-1+384,num_samples/4):
+for i in range(Navg-1+384,int(num_samples/4)):
     if abs(y.real[i+1] - o_complex_data.real[i+2]) > 2:
-        print color.RED + color.BOLD + 'FAILED Real' + color.END, i, y.real[i+1], o_complex_data.real[i+2], y.real[i+1]-o_complex_data.real[i+2]
-        print color.RED + color.BOLD + '*** Error: End Validation ***\n' + color.END
+        print ("Real", i, y.real[i+1], o_complex_data.real[i+2], y.real[i+1]-o_complex_data.real[i+2])
         sys.exit(1)
     '''
     if abs(y.imag[i+1] - o_complex_data.imag[i+2]) > 2:
-        print color.RED + color.BOLD + 'FAILED Imag' + color.END, i, y.imag[i+1], o_complex_data.imag[i+2], y.imag[i+1]-o_complex_data.imag[i+2]
-        print color.RED + color.BOLD + '*** Error: End Validation ***\n' + color.END
+        print ("Imag", i, y.imag[i+1], o_complex_data.imag[i+2], y.imag[i+1]-o_complex_data.imag[i+2])
         sys.exit(1)
     '''
-for i in xrange(num_samples/4+896,num_samples/2):
+for i in range(int(num_samples/4+896),int(num_samples/2)):
     if abs(y.real[i+1] - o_complex_data.real[i+2]) > 2:
-        print color.RED + color.BOLD + 'FAILED Real' + color.END, i, y.real[i+1], o_complex_data.real[i+2], y.real[i+1]-o_complex_data.real[i+2]
-        print color.RED + color.BOLD + '*** Error: End Validation ***\n' + color.END
+        print ("Real", i, y.real[i+1], o_complex_data.real[i+2], y.real[i+1]-o_complex_data.real[i+2])
         sys.exit(1)
     '''
     if abs(y.imag[i+1] - o_complex_data.imag[i+2]) > 2:
-        print color.RED + color.BOLD + 'FAILED Imag' + color.END, i, y.imag[i+1], o_complex_data.imag[i+2], y.imag[i+1]-o_complex_data.imag[i+2]
-        print color.RED + color.BOLD + '*** Error: End Validation ***\n' + color.END
+        print ("Imag" + color.END, i, y.imag[i+1], o_complex_data.imag[i+2], y.imag[i+1]-o_complex_data.imag[i+2])
         sys.exit(1)
     '''
-for i in xrange(num_samples/2+384,num_samples*3/4):
+for i in range(int(num_samples/2+384),int(num_samples*3/4)):
     if abs(y.real[i+1] - o_complex_data.real[i+2]) > 2:
-        print color.RED + color.BOLD + 'FAILED Real' + color.END, i, y.real[i+1], o_complex_data.real[i+2], y.real[i+1]-o_complex_data.real[i+2]
-        print color.RED + color.BOLD + '*** Error: End Validation ***\n' + color.END
+        print ("Real", i, y.real[i+1], o_complex_data.real[i+2], y.real[i+1]-o_complex_data.real[i+2])
         sys.exit(1)
     '''
     if abs(y.imag[i+1] - o_complex_data.imag[i+2]) > 2:
-       print color.RED + color.BOLD + 'FAILED Imag' + color.END, i, y.imag[i+1], o_complex_data.imag[i+2], y.imag[i+1]-o_complex_data.imag[i+2]
-        print color.RED + color.BOLD + '*** Error: End Validation ***\n' + color.END
-        sys.exit(1)
+       print ("Imag", i, y.imag[i+1], o_complex_data.imag[i+2], y.imag[i+1]-o_complex_data.imag[i+2])
+       sys.exit(1)
     '''
-for i in xrange(num_samples*3/4+256,num_samples-2):
+for i in range(int(num_samples*3/4+256),num_samples-2):
     if abs(y.real[i+1] - o_complex_data.real[i+2]) > 2:
-        print color.RED + color.BOLD + 'FAILED Real' + color.END, i, y.real[i+1], o_complex_data.real[i+2], y.real[i+1]-o_complex_data.real[i+2]
-        print color.RED + color.BOLD + '*** Error: End Validation ***\n' + color.END
+        print ("Real", i, y.real[i+1], o_complex_data.real[i+2], y.real[i+1]-o_complex_data.real[i+2])
         sys.exit(1)
     '''
     if abs(y.imag[i+1] - o_complex_data.imag[i+2]) > 2:
-        print color.RED + color.BOLD + 'FAILED Imag' + color.END, i, y.imag[i+1], o_complex_data.imag[i+2], y.imag[i+1]-o_complex_data.imag[i+2]
-        print color.RED + color.BOLD + '*** Error: End Validation ***\n' + color.END
+        print ("Imag", i, y.imag[i+1], o_complex_data.imag[i+2], y.imag[i+1]-o_complex_data.imag[i+2])
         sys.exit(1)
     '''
-
-print 'Data matched expected results.'
-print color.GREEN + color.BOLD + 'PASSED' + color.END
-print '*** End validation ***\n'

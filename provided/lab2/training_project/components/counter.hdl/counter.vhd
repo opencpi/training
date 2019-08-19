@@ -23,38 +23,40 @@
 
 library IEEE; use IEEE.std_logic_1164.all; use ieee.numeric_std.all;
 library ocpi; use ocpi.types.all; -- remove this to avoid all ocpi name collisions
+
 architecture rtl of counter_worker is
-  signal enable          : std_logic;
-  signal counter         : unsigned(15 downto 0) := (others => '0');
-  -- finished becomes true when the counter reaches its "max" value 
-  signal finished        : std_logic := '0';
+
+  signal s_enable   : std_logic;
+  signal s_counter  : unsigned(15 downto 0) := (others => '0');
+  -- finished becomes true when the counter reaches its "max" value
+  signal s_finished : std_logic             := '0';
 
 begin
 
-ctl_out.finished <= finished;
+  ctl_out.finished <= s_finished;
 
-enable <= '1' when (its(ctl_in.is_operating)) else '0';  
+  s_enable <= std_logic(ctl_in.is_operating);
 
-count : process (ctl_in.clk)
-begin
-
-  if rising_edge(ctl_in.clk) then
--- Normal code - no debugging. Simple counter
-    if ctl_in.reset = '1' then
-      counter <= (others => '0');
-      finished <= '0';
-    elsif its(enable) then
-      if (not finished) then
-        if (counter < props_in.max) then
-          counter <= counter + 2;
-        else
-          finished <= '1';
+  count : process (ctl_in.clk)
+  begin
+    if rising_edge(ctl_in.clk) then
+      -- Normal code - no debugging. Simple counter
+      if (ctl_in.reset = '1') then
+        s_counter  <= (others => '0');
+        s_finished <= '0';
+      elsif (s_enable = '1') then
+        if (not s_finished) then
+          if (s_counter < props_in.max) then
+            s_counter <= s_counter + 2;
+          else
+            s_finished <= '1';
+          end if;
         end if;
       end if;
     end if;
-  end if;
-end process count;
--- output the counter value
-props_out.counter <= counter;
+  end process count;
+
+  -- output the counter value
+  props_out.counter <= s_counter;
 
 end rtl;

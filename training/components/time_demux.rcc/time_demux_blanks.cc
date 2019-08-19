@@ -54,6 +54,13 @@ class Time_demuxWorker : public Time_demuxWorkerBase {
   }
 
   RCCResult run(bool /*timedout*/) {
+    // determine if end of file
+    if (Mux_In.???) { // <---- if Mux_In ports gets a end of file 
+      Data_Out.???;   // <---- pass on a end of file to Data_Out port
+      Time_Out.???;   // <---- pass on a end of file to Time_Out port
+      return RCC_DONE;
+    }
+
     // Determine opcode
     switch (???) {
       case ???_OPERATION: // IQ (found in gen/time_demux-worker.hh)

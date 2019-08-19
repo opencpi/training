@@ -46,86 +46,71 @@ library IEEE; use IEEE.std_logic_1164.all; use ieee.numeric_std.all;
 use ieee.math_real.all;
 library ocpi; use ocpi.types.all; -- remove this to avoid all ocpi name collisions
 
-architecture rtl of agc_complex_worker is
+architecture rtl of worker is
 
   -- INITIALIZE THE CONSTANTS TO THE CORRECT VALUES
   -- HINT: Examine the OWD to determine the PARAMETERS
-  constant DATA_WIDTH_c         : integer := to_integer(unsigned(TODO));
-  constant AVG_WINDOW_c         : integer := to_integer(unsigned(TODO));
-  constant MAX_MESSAGE_VALUES_c : integer := 4096;  -- from iqstream_protocol
+  constant c_data_width : integer := to_integer(TODO);
+  constant c_avg_window : integer := to_integer(TODO);
 
-  signal i_odata          : std_logic_vector(DATA_WIDTH_c-1 downto 0);
-  signal q_odata          : std_logic_vector(DATA_WIDTH_c-1 downto 0);
-  signal idata_vld        : std_logic;
-  signal odata_vld        : std_logic;
-  signal missed_odata_vld : std_logic := '0';
-  signal reg_wr_en        : std_logic;
-  signal msg_cnt          : unsigned(integer(ceil(log2(real(MAX_MESSAGE_VALUES_c))))-1 downto 0);
-  signal max_sample_cnt   : unsigned(integer(ceil(log2(real(MAX_MESSAGE_VALUES_c))))-1 downto 0);
-  signal enable           : std_logic;
-  signal zlm              : std_logic;
+  signal s_valid : std_logic;
+  signal s_i_o   : std_logic_vector(c_data_width-1 downto 0);
+  signal s_q_o   : std_logic_vector(c_data_width-1 downto 0);
+  signal s_write : std_logic;
 
 begin
 
   -----------------------------------------------------------------------------
-  -- 'enable' when Control State is_operating and up/downstream Workers ready
+  -- Enable circuitry when input valid and output ready
   -----------------------------------------------------------------------------
-  enable <= TODO;
+
+  s_valid <= TODO;
 
   -----------------------------------------------------------------------------
-  -- 'idata_vld' enable primitives when enabled and input valid
+  -- Data Port Interface (WSI Port assignments)
   -----------------------------------------------------------------------------
-  idata_vld <= TODO;
+
+  -- Reference gen/{worker}-impl.vhd for signals within the in_in record
+  -- and implement a simple "pass-thru" of the messaging signals.
+  in_out.take   <= TODO;  -- When circuit is processing valid data
+  out_out.valid <= TODO;  -- When circuit is processing valid data
+
+  out_out.data <= std_logic_vector(resize(signed(s_q_o), 16)) &
+                  std_logic_vector(resize(signed(s_i_o), 16));
 
   -----------------------------------------------------------------------------
   -- AGC Primitive Instantation
   -----------------------------------------------------------------------------
-  reg_wr_en <= props_in.ref_written or props_in.mu_written;
+  s_write <= props_in.ref_written or props_in.mu_written;
 
   i_agc : prims.prims.agc
     generic map (
-      DATA_WIDTH => DATA_WIDTH_c,
-      NAVG       => AVG_WINDOW_c)
+      g_data_width => c_data_width,
+      g_navg       => c_avg_window)
     port map (
-      CLK     => TODO, -- control plane clock
-      RST     => TODO, -- control plane reset
-      REG_WR  => TODO, -- reg_wr_en
-      REF     => std_logic_vector(TODO), -- REF property
-      MU      => std_logic_vector(TODO), -- MU property
-      DIN_VLD => TODO, -- idata_vld
-      HOLD    => TODO, -- HOLD property
-      DIN     => TODO(DATA_WIDTH_c-1+16 downto 16), -- input data
-      DOUT    => TODO); -- i_odata
+      i_clk   => TODO, -- control plane clock
+      i_rst   => TODO, -- control plane reset
+      i_write => TODO,
+      i_ref   => std_logic_vector(TODO), -- REF property
+      i_mu    => std_logic_vector(TODO), -- MU property
+      i_hold  => TODO, -- HOLD property
+      i_valid => TODO,
+      i_data  => TODO(c_data_width-1 downto 0)), -- input data
+      o_data  => s_i_o);
 
   q_agc : prims.prims.agc
     generic map (
-      DATA_WIDTH => DATA_WIDTH_c,
-      NAVG       => AVG_WINDOW_c)
+      g_data_width => c_data_width,
+      g_navg       => c_avg_window)
     port map (
-      CLK     => TODO, -- control plane clock
-      RST     => TODO, -- control plane reset
-      REG_WR  => TODO, -- reg_wr_en
-      REF     => std_logic_vector(TODO), -- REF property
-      MU      => std_logic_vector(TODO), -- MU property
-      DIN_VLD => TODO, -- idata_vld
-      HOLD    => TODO, -- HOLD property
-      DIN     => TODO(DATA_WIDTH_c-1 downto 0), -- input data
-      DOUT    => TODO); -- q_odata
+      i_clk   => TODO, -- control plane clock
+      i_rst   => TODO, -- control plane reset
+      i_write => TODO,
+      i_ref   => std_logic_vector(TODO), -- REF property
+      i_mu    => std_logic_vector(TODO), -- MU property
+      i_hold  => TODO, -- HOLD property
+      i_valid => TODO,
+      i_data  => TODO(c_data_width-1+16 downto 16), -- input data
+      o_data  => s_q_o);
 
-  -----------------------------------------------------------------------------
-  -- WSI Port assignments
-  -----------------------------------------------------------------------------
-  out_out.data <= std_logic_vector(resize(signed(i_odata),16)) &
-                  std_logic_vector(resize(signed(q_odata),16));
-
-  -- Reference gen/{worker}-impl.vhd for signals within the in_in record
-  -- and implement a 'pass-thru' of the messaging signals.
-
-  in_out.take   <= TODO   -- Control state is_operating, up and downstream workers are ready
-  out_out.give  <= TODO   -- Control state is_operating, up and downstream workers are ready
-  out_out.som   <= TODO   -- Make assignment to simply pass input SOM
-  out_out.eom   <= TODO   -- Make assignment to simply pass input EOM
-  out_out.valid <= TODO   -- Make assignment to simply pass input VALID
-  out_out.byte_enable <= TODO  -- Make assignment to simply pass input BYTE_ENABLE
-  
 end rtl;
